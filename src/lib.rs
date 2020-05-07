@@ -114,9 +114,8 @@ impl Dacloud {
                 val.b = v.to_string().parse().unwrap();
             } else {
                 let mut i: i32 = -1;
-                match v.to_string().parse::<i32>() {
-                    Ok(s) => i = s,
-                    Err(_) => ()
+                if let Ok(s) = v.to_string().parse::<i32>() {
+                    i = s;
                 }
                 val.i = i;
             }
