@@ -2,9 +2,10 @@ use std::collections::HashMap;
 use curl::easy::{Easy, List};
 use crypto::digest::Digest;
 use lru_cache::LruCache;
+pub use serde::{Serialize, Deserialize};
 use json;
 
-#[derive(Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Value {
     pub b: bool,
     pub i: i32,
@@ -21,6 +22,13 @@ impl Value {
     }
 }
 
+impl PartialEq for Value {
+    fn eq(&self, v: &Self) -> bool {
+        self.s == v.s
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Config {
     pub host: String,
     pub licence_key: String,
@@ -35,6 +43,7 @@ impl Config {
 
 type Properties = HashMap<String, Value>;
 
+#[derive(Clone)]
 pub struct Dacloud {
     cfg: Config,
     hash: crypto::sha1::Sha1,
@@ -125,7 +134,7 @@ mod tests {
     fn dc_integration_tests() {
         let mut host = String::from("region0.deviceatlascloud.com");
         let mut licence_key = String::from("12345");
-        let mut cfg = Config::new(host, licence_key);
+        let cfg = Config::new(host, licence_key, 0 as usize);
         let mut dc = Dacloud::new(cfg);
         assert!(dc.headers.len() == 0);
         dc.headers.insert(String::from("user-agent"), String::from("iPhone"));
@@ -134,9 +143,12 @@ mod tests {
         assert!(ret.len() == 0);
         host = String::from("region2.deviceatlascloud.com");
         licence_key = String::from("dummy");
-        cfg = Config::new(host, licence_key, 32 as usize);
-        dc.headers.insert(String::from("user-agent"), String::from("iPhone"));
+        let cfg2 = Config::new(host, licence_key, 32 as usize);
+        let mut dc2 = Dacloud::new(cfg2);
+        dc2.headers.insert(String::from("user-agent"), String::from("iPhone"));
+        assert!(dc.headers == dc2.headers);
         ret = dc.req();
+        assert!(ret.len() == 0);
     }
 }
 

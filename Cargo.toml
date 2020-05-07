@@ -12,3 +12,4 @@ json = "*"
 clap = "*"
 rust-crypto = "*"
 lru-cache = "*"
+serde = {version = "*", features = ["derive"]}
