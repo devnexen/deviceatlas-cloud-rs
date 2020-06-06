@@ -1,9 +1,10 @@
+use json;
+pub use serde::{Deserialize, Serialize};
 use crypto::digest::Digest;
 use curl::easy::{Easy, List};
-use json;
 use lru_cache::LruCache;
-pub use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::process;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Value {
@@ -115,7 +116,10 @@ impl Dacloud {
             .unwrap();
             match t.perform() {
                 Ok(_) => (),
-                Err(s) => println!("error request: {}", s),
+                Err(s) => {
+                            println!("error request: {} from {}", s, full_url);
+                            process::exit(-1)
+                          },
             };
         }
         match String::from_utf8(self.resp.clone()) {

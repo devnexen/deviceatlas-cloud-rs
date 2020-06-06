@@ -34,7 +34,7 @@ pub fn main() {
     args = app.get_matches();
     let host = args
         .value_of("host")
-        .unwrap_or("http://region0.deviceatlascloud.com");
+        .unwrap_or("region0.deviceatlascloud.com");
     let licence_key = args.value_of("licence_key").unwrap();
     let user_agent = args.value_of("user_agent").unwrap();
     let cfg = dacloud::Config::new(host.to_string(), licence_key.to_string(), 0 as usize);
